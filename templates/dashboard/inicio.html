@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    {% include 'components/sidebar.html' %}
+
+    <main class="min-w-0 flex-1 p-4 sm:p-6 md:p-8">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 md:text-4xl">Dashboard</h1>
+                <p class="mt-2 text-slate-600">Resumen visual del inventario de equipos.</p>
+            </div>
+            <a href="{% url 'equipos' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800">
+                Ver inventario
+            </a>
+        </div>
+
+        <section class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores generales">
+            <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-medium text-slate-500">Total de equipos</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">{{ total_equipos }}</p>
+                <p class="mt-1 text-sm text-slate-500">en {{ tipos_equipo|length }} tipos</p>
+            </article>
+            <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-medium text-slate-500">Equipos funcionales</p>
+                <p class="mt-2 text-3xl font-bold text-emerald-700">{{ total_activos }}</p>
+                <p class="mt-1 text-sm text-slate-500">{{ porcentaje_activos }}% del inventario</p>
+            </article>
+            <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-medium text-slate-500">Titulares</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">{{ total_titulares }}</p>
+                <p class="mt-1 text-sm text-slate-500">registrados en el sistema</p>
+            </article>
+            <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-medium text-slate-500">Asignaciones activas</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">{{ total_asignaciones }}</p>
+                <p class="mt-1 text-sm text-slate-500">de equipos a titulares</p>
+            </article>
+        </section>
+
+        <section class="mt-9" aria-labelledby="equipos-por-tipo">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-2">
+                <div>
+                    <h2 id="equipos-por-tipo" class="text-2xl font-bold text-slate-900">Equipos por tipo</h2>
+                    <p class="mt-1 text-sm text-slate-500">Cantidad y proporción de cada dispositivo en el inventario.</p>
+                </div>
+            </div>
+
+            {% if tipos_equipo %}
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {% for tipo in tipos_equipo %}
+                <a href="{% url 'equipos' %}?q={{ tipo.nombre|urlencode }}"
+                   class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md">
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                            <svg class="h-9 w-9" role="img" aria-label="{{ tipo.nombre }} icono">
+                                <use href="{% static 'img/device-icons.svg' %}#{{ tipo.icono }}"></use>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="break-words font-semibold text-slate-800 group-hover:text-blue-800">{{ tipo.nombre|title }}</h3>
+                            <p class="mt-1 text-sm text-slate-500">{{ tipo.porcentaje }}% del inventario</p>
+                        </div>
+                        <p class="shrink-0 text-3xl font-bold text-slate-900">{{ tipo.total }}</p>
+                    </div>
+                    <div class="mt-5 h-2 overflow-hidden rounded-full bg-slate-100"
+                         role="progressbar"
+                         aria-label="Porcentaje de {{ tipo.nombre }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         aria-valuenow="{{ tipo.porcentaje }}">
+                        <div class="h-full rounded-full bg-blue-600 transition-all" style="width: {{ tipo.porcentaje }}%"></div>
+                    </div>
+                    <p class="mt-3 text-right text-xs font-medium text-blue-700">Ver estos equipos →</p>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+                <p class="font-semibold text-slate-700">Aún no hay equipos registrados</p>
+                <p class="mt-1 text-sm text-slate-500">Agrega o importa equipos para ver el resumen por tipo.</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+{% endblock %}

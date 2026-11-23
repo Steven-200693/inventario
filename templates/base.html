@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario TI</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="min-h-screen bg-slate-100">
+    {% if messages %}
+    <div class="fixed right-4 top-4 z-50 space-y-2" aria-live="polite">
+        {% for message in messages %}
+        <p class="rounded-lg bg-slate-900 px-4 py-3 text-white shadow-lg">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

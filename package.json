@@ -1,0 +1,13 @@
+{
+  "name": "inventario-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tailwindcss -i ./frontend/src/input.css -o ./static/css/output.css --watch",
+    "build": "tailwindcss -i ./frontend/src/input.css -o ./static/css/output.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  }
+}

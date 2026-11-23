@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    {% include 'components/sidebar.html' %}
+    <main class="flex-1 p-6 md:p-10">
+        <section class="mx-auto max-w-xl rounded-xl bg-white p-8 shadow">
+            <h1 class="text-2xl font-bold text-slate-900">Eliminar equipo</h1>
+            <p class="mt-4 text-slate-600">¿Seguro que deseas eliminar <strong>{{ objeto }}</strong>? También se eliminarán sus fotografías y asignaciones asociadas.</p>
+            <form method="post" class="mt-6 flex gap-3">
+                {% csrf_token %}
+                <button type="submit" class="rounded-lg bg-red-600 px-5 py-2 font-semibold text-white hover:bg-red-700">Sí, eliminar</button>
+                <a href="{% url 'equipos' %}" class="rounded-lg border border-slate-300 px-5 py-2 font-semibold text-slate-700">Cancelar</a>
+            </form>
+        </section>
+    </main>
+</div>
+{% endblock %}

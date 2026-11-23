@@ -1,0 +1,23 @@
+<aside class="min-h-screen w-14 shrink-0 bg-slate-900 text-white md:w-64">
+    <div class="p-3 md:p-6">
+        <h2 class="text-center text-xl font-bold md:text-left">
+            <span class="md:hidden">IT</span>
+            <span class="hidden md:inline">Inventario TI</span>
+        </h2>
+    </div>
+
+    <nav class="space-y-1 px-1 md:px-4" aria-label="Navegación principal">
+        <a href="{% url 'dashboard' %}" aria-label="Dashboard" title="Dashboard" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">D</span><span class="hidden md:inline">Dashboard</span>
+        </a>
+        <a href="{% url 'equipos' %}" aria-label="Equipos" title="Equipos" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">E</span><span class="hidden md:inline">Equipos</span>
+        </a>
+        <a href="{% url 'admin:titulares_titular_changelist' %}" aria-label="Titulares" title="Titulares" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">T</span><span class="hidden md:inline">Titulares</span>
+        </a>
+        <a href="{% url 'asignaciones' %}" aria-label="Asignaciones" title="Asignaciones" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">A</span><span class="hidden md:inline">Asignaciones</span>
+        </a>
+    </nav>
+</aside>
