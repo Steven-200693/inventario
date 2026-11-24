@@ -83,7 +83,17 @@ def exportar_excel(request):
         celda.alignment = Alignment(horizontal="center", vertical="center")
 
     busqueda = request.GET.get("q", "").strip()
-    equipos = _equipos_filtrados(busqueda).prefetch_related(
+    ids_visibles = [
+        int(valor)
+        for valor in request.GET.get("ids", "").split(",")
+        if valor.strip().isdigit()
+    ]
+    if ids_visibles:
+        equipos = Equipo.objects.filter(pk__in=ids_visibles)
+    else:
+        equipos = _equipos_filtrados(busqueda)
+
+    equipos = equipos.prefetch_related(
         "asignaciones__titular",
     )
     for equipo in equipos:

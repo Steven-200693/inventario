@@ -132,7 +132,7 @@ class InventarioCrudTests(TestCase):
         response = self.client.get("/inventario/")
 
         self.assertContains(response, 'id="buscador"')
-        self.assertContains(response, 'src="/static/js/busqueda.js?v=3"')
+        self.assertContains(response, 'src="/static/js/busqueda.js?v=4"')
         self.assertContains(response, "data-search-primary")
         self.assertNotContains(response, "overflow-x-auto")
         self.assertNotContains(response, "min-w-[2400px]")
@@ -159,7 +159,7 @@ class InventarioCrudTests(TestCase):
         self.assertContains(response, 'href="/inventario/importar/"')
         self.assertContains(response, 'href="/inventario/exportar/"')
         self.assertContains(response, "data-export-link")
-        self.assertContains(response, 'src="/static/js/busqueda.js?v=3"')
+        self.assertContains(response, 'src="/static/js/busqueda.js?v=4"')
 
     def test_export_download_contains_inventory_headers_and_values(self):
         Equipo.objects.create(
@@ -258,6 +258,31 @@ class InventarioCrudTests(TestCase):
             'filename="inventario-calidad-medica-equipo.xlsx"',
             response["Content-Disposition"],
         )
+
+    def test_export_accepts_exact_visible_ids_from_client_filter(self):
+        from openpyxl import load_workbook
+
+        equipo_visible = Equipo.objects.create(
+            codigo="EQ-VISIBLE",
+            nombre="Calidad Médica",
+            estado="FUNCIONAL",
+        )
+        Equipo.objects.create(
+            codigo="EQ-OCULTO",
+            nombre="Calidad Médica",
+            estado="BAJA",
+        )
+
+        exportacion = self.client.get(
+            f"/inventario/exportar/?q=medica&ids={equipo_visible.pk}"
+        )
+
+        workbook = load_workbook(BytesIO(exportacion.content), read_only=True)
+        sheet = workbook["Inventario"]
+        rows = list(sheet.iter_rows(min_row=2, values_only=True))
+        workbook.close()
+
+        self.assertEqual([row[0] for row in rows], ["EQ-VISIBLE"])
 
     def test_importing_filtered_export_only_updates_included_equipment(self):
         equipo_filtrado = Equipo.objects.create(

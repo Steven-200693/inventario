@@ -23,6 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (valor) {
             url.searchParams.set("q", valor);
         }
+        const ids = Array.from(items)
+            .filter((item) => !item.hidden)
+            .map((item) => item.dataset.equipoId)
+            .filter(Boolean);
+        if (valor && ids.length) {
+            url.searchParams.set("ids", ids.join(","));
+        } else {
+            url.searchParams.delete("ids");
+        }
         enlaceExportacion.href = `${url.pathname}${url.search}`;
     };
 
