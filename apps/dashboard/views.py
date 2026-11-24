@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from apps.asignaciones.models import Asignacion
 from apps.inventario.models import Equipo
+from apps.inventario_subred.models import SubredEquipo
 from apps.titulares.models import Titular
 
 
@@ -32,8 +33,18 @@ def normalizar_nombre(nombre):
 
 
 def dashboard(request):
-    total_equipos = Equipo.objects.count()
-    equipos_por_tipo = Equipo.objects.values("nombre").annotate(
+    modulo = request.GET.get("modulo", "phb").strip().lower()
+    if modulo not in ("phb", "subred"):
+        modulo = "phb"
+    estado = request.GET.get("estado", "").strip().upper()
+
+    modelo = SubredEquipo if modulo == "subred" else Equipo
+    equipos = modelo.objects.all()
+    if estado:
+        equipos = equipos.filter(estado=estado)
+
+    total_equipos = equipos.count()
+    equipos_por_tipo = equipos.values("nombre").annotate(
         total=Count("id"),
     ).order_by("-total", "nombre")
     tipos_equipo = [
@@ -51,15 +62,31 @@ def dashboard(request):
         }
         for item in equipos_por_tipo
     ]
-    total_activos = Equipo.objects.filter(estado="FUNCIONAL").count()
+    total_activos = equipos.filter(estado="FUNCIONAL").count()
+    estados = (
+        ("", "Todos los estados"),
+        ("FUNCIONAL", "Funcional"),
+        ("MANTENIMIENTO", "Mantenimiento"),
+        ("DAÑADO", "Dañado"),
+        ("BAJA", "Baja"),
+    )
 
     return render(
         request,
         "dashboard/inicio.html",
         {
+            "modulo": modulo,
+            "estado": estado,
+            "estados": estados,
             "total_equipos": total_equipos,
-            "total_titulares": Titular.objects.count(),
-            "total_asignaciones": Asignacion.objects.filter(activa=True).count(),
+            "total_titulares": (
+                0 if modulo == "subred" else Titular.objects.count()
+            ),
+            "total_asignaciones": (
+                0
+                if modulo == "subred"
+                else Asignacion.objects.filter(activa=True).count()
+            ),
             "total_activos": total_activos,
             "porcentaje_activos": (
                 round(total_activos * 100 / total_equipos, 1)

@@ -15,8 +15,8 @@
                 <a href="{% url 'subred_importar_excel' %}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50">
                     Importar Excel
                 </a>
-                <a data-export-link data-export-url="{% url 'subred_exportar_excel' %}"
-                   href="{% url 'subred_exportar_excel' %}{% if busqueda %}?q={{ busqueda|urlencode }}{% endif %}"
+                <a data-export-link data-export-url="{% url 'subred_exportar_excel' %}{% if estado %}?estado={{ estado|urlencode }}{% endif %}"
+                   href="{% url 'subred_exportar_excel' %}?{% if busqueda %}q={{ busqueda|urlencode }}&{% endif %}{% if estado %}estado={{ estado|urlencode }}{% endif %}"
                    class="rounded-lg border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50">
                     Exportar Excel
                 </a>

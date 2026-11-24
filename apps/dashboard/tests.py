@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from apps.inventario.models import Equipo
+from apps.inventario_subred.models import SubredEquipo
 from apps.titulares.models import Titular
 
 
@@ -40,3 +41,25 @@ class DashboardTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Aún no hay equipos registrados")
+
+    def test_subred_dashboard_filter_is_independent_from_phb(self):
+        SubredEquipo.objects.create(
+            codigo="SR-1",
+            nombre="SWITCH",
+            estado="FUNCIONAL",
+        )
+        SubredEquipo.objects.create(
+            codigo="SR-2",
+            nombre="ROUTER",
+            estado="DAÑADO",
+        )
+
+        response = self.client.get(
+            "/?modulo=subred&estado=FUNCIONAL",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Inventario Subred")
+        self.assertContains(response, "Filtrar dashboard")
+        self.assertContains(response, "SWITCH")
+        self.assertNotContains(response, "ROUTER")
