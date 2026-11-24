@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.usuarios",
     "apps.dashboard",
     "apps.inventario",
+    "apps.inventario_subred",
     "apps.titulares",
     "apps.asignaciones",
     "apps.configuracion",

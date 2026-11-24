@@ -10,8 +10,11 @@
         <a href="{% url 'dashboard' %}" aria-label="Dashboard" title="Dashboard" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
             <span class="md:hidden">D</span><span class="hidden md:inline">Dashboard</span>
         </a>
-        <a href="{% url 'equipos' %}" aria-label="Equipos" title="Equipos" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
-            <span class="md:hidden">E</span><span class="hidden md:inline">Equipos</span>
+        <a href="{% url 'equipos' %}" aria-label="Inventario PHB" title="Inventario PHB" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">PHB</span><span class="hidden md:inline">Inventario PHB</span>
+        </a>
+        <a href="{% url 'subred_equipos' %}" aria-label="Inventario Subred" title="Inventario Subred" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
+            <span class="md:hidden">SR</span><span class="hidden md:inline">Inventario Subred</span>
         </a>
         <a href="{% url 'admin:titulares_titular_changelist' %}" aria-label="Titulares" title="Titulares" class="block rounded p-3 text-center text-white hover:bg-slate-700 md:text-left">
             <span class="md:hidden">T</span><span class="hidden md:inline">Titulares</span>
