@@ -4,7 +4,7 @@ from io import BytesIO
 
 from django.contrib import messages
 from django.core.management.base import CommandError
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import slugify
@@ -94,54 +94,48 @@ def exportar_excel(request):
         equipos = _equipos_filtrados(busqueda)
 
     equipos = equipos.prefetch_related(
-        Prefetch(
-            "asignaciones",
-            queryset=Asignacion.objects.filter(activa=True)
-            .select_related("titular")
-            .order_by("-fecha_asignacion", "-pk"),
-            to_attr="asignaciones_activas",
-        ),
+        "asignaciones__titular",
     )
     for equipo in equipos:
-        asignaciones_activas = equipo.asignaciones_activas
-        titular_actual = (
-            asignaciones_activas[0].titular.nombre
-            if asignaciones_activas
-            else ""
-        )
-        valores = (
-            equipo.codigo,
-            equipo.nombre,
-            equipo.ampliacion,
-            equipo.serie,
-            equipo.numero_telefono,
-            equipo.extension,
-            equipo.marca,
-            equipo.modelo,
-            equipo.gfh_codigo,
-            equipo.gfh_descripcion,
-            equipo.area_codigo,
-            equipo.area_descripcion,
-            equipo.fecha_puesta_en_servicio,
-            equipo.modo_incorporacion,
-            equipo.estado,
-            titular_actual,
-            equipo.naturaleza_patrimonial,
-            equipo.servicio,
-        )
-        valores_limpios = tuple(
-            ILLEGAL_CHARACTERS_RE.sub("", valor)
-            if isinstance(valor, str)
-            else valor
-            for valor in valores
-        )
-        hoja.append(valores_limpios)
-        for celda in hoja[hoja.max_row]:
-            if isinstance(celda.value, str):
-                celda.data_type = "s"
-                celda.number_format = "@"
-            elif isinstance(celda.value, date):
-                celda.number_format = "dd/mm/yyyy"
+        titulares = [
+            asignacion.titular.nombre
+            for asignacion in equipo.asignaciones.all()
+            if asignacion.activa
+        ] or [""]
+        for titular in titulares:
+            valores = (
+                equipo.codigo,
+                equipo.nombre,
+                equipo.ampliacion,
+                equipo.serie,
+                equipo.numero_telefono,
+                equipo.extension,
+                equipo.marca,
+                equipo.modelo,
+                equipo.gfh_codigo,
+                equipo.gfh_descripcion,
+                equipo.area_codigo,
+                equipo.area_descripcion,
+                equipo.fecha_puesta_en_servicio,
+                equipo.modo_incorporacion,
+                equipo.estado,
+                titular,
+                equipo.naturaleza_patrimonial,
+                equipo.servicio,
+            )
+            valores_limpios = tuple(
+                ILLEGAL_CHARACTERS_RE.sub("", valor)
+                if isinstance(valor, str)
+                else valor
+                for valor in valores
+            )
+            hoja.append(valores_limpios)
+            for celda in hoja[hoja.max_row]:
+                if isinstance(celda.value, str):
+                    celda.data_type = "s"
+                    celda.number_format = "@"
+                elif isinstance(celda.value, date):
+                    celda.number_format = "dd/mm/yyyy"
 
     hoja.auto_filter.ref = hoja.dimensions
     for columna in hoja.columns:

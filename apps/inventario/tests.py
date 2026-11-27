@@ -196,38 +196,6 @@ class InventarioCrudTests(TestCase):
         self.assertEqual(sheet.cell(2, 18).value, "Servicio TI")
         workbook.close()
 
-    def test_export_has_one_row_per_equipment_with_latest_active_holder(self):
-        equipo = Equipo.objects.create(
-            codigo="EQ-TITULAR",
-            nombre="Equipo con titular actual",
-            estado="FUNCIONAL",
-        )
-        titular_anterior = Titular.objects.create(nombre="Titular anterior")
-        titular_actual = Titular.objects.create(nombre="Titular actual")
-        Asignacion.objects.create(
-            equipo=equipo,
-            titular=titular_anterior,
-            activa=True,
-        )
-        Asignacion.objects.create(
-            equipo=equipo,
-            titular=titular_actual,
-            activa=True,
-        )
-
-        response = self.client.get("/inventario/exportar/")
-
-        from openpyxl import load_workbook
-
-        workbook = load_workbook(BytesIO(response.content), read_only=True)
-        sheet = workbook["Inventario"]
-        rows = list(sheet.iter_rows(min_row=2, values_only=True))
-        workbook.close()
-
-        rows_equipo = [row for row in rows if row[0] == equipo.codigo]
-        self.assertEqual(len(rows_equipo), 1)
-        self.assertEqual(rows_equipo[0][15], "Titular actual")
-
     def test_export_keeps_cell_values_safe_and_formats_dates(self):
         Equipo.objects.create(
             codigo="0007",
