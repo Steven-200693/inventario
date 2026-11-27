@@ -39,10 +39,8 @@ ENCABEZADOS_EXCEL = (
 )
 
 
-def _equipos_filtrados(busqueda, estado=""):
+def _equipos_filtrados(busqueda):
     equipos = SubredEquipo.objects.all()
-    if estado:
-        equipos = equipos.filter(estado=estado)
     if busqueda:
         equipos = equipos.filter(
             Q(codigo__icontains=busqueda)
@@ -68,12 +66,11 @@ def _equipos_filtrados(busqueda, estado=""):
 
 def lista_equipos(request):
     busqueda = request.GET.get("q", "").strip()
-    estado = request.GET.get("estado", "").strip().upper()
-    equipos = _equipos_filtrados(busqueda, estado).prefetch_related("fotos")
+    equipos = _equipos_filtrados(busqueda).prefetch_related("fotos")
     return render(
         request,
         "inventario_subred/lista.html",
-        {"equipos": equipos, "busqueda": busqueda, "estado": estado},
+        {"equipos": equipos, "busqueda": busqueda},
     )
 
 
@@ -90,7 +87,6 @@ def exportar_excel(request):
         celda.alignment = Alignment(horizontal="center", vertical="center")
 
     busqueda = request.GET.get("q", "").strip()
-    estado = request.GET.get("estado", "").strip().upper()
     ids_visibles = [
         int(valor)
         for valor in request.GET.get("ids", "").split(",")
@@ -99,7 +95,7 @@ def exportar_excel(request):
     equipos = (
         SubredEquipo.objects.filter(pk__in=ids_visibles)
         if ids_visibles
-        else _equipos_filtrados(busqueda, estado)
+        else _equipos_filtrados(busqueda)
     )
 
     for equipo in equipos:
